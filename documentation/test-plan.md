@@ -10,9 +10,10 @@
 6. [Test Data](#6-test-data)
 7. [Critical Test Scenarios](#7-critical-test-scenarios)
 8. [Basic API and Network Checks](#8-basic-api-and-network-checks)
-9. [Entry Criteria](#9-entry-criteria)
-10. [Exit Criteria](#10-exit-criteria)
-11. [Deliverables](#11-deliverables)
+9. [Team Test Case Groups](#9-team-test-case-groups)
+10. [Entry Criteria](#10-entry-criteria)
+11. [Exit Criteria](#11-exit-criteria)
+12. [Deliverables](#12-deliverables)
 
 ## 1. Purpose
 
@@ -29,7 +30,6 @@ This test plan covers only the public EatStreet web application.
 In scope:
 
 - Home page and public navigation.
-- Cookie banner behavior.
 - Address/location search.
 - Delivery and Takeout selection.
 - Restaurant search results.
@@ -41,7 +41,6 @@ In scope:
 - Cart count and order summary.
 - Checkout entry flow up to sign-in/authentication gate.
 - Sign-in/sign-up entry points.
-- Basic responsive layout checks.
 - Basic console and network/API checks through browser DevTools.
 
 ## 3. Out of Scope
@@ -54,6 +53,8 @@ The following areas are not covered:
 - Restaurant dashboard.
 - Driver app.
 - Mobile native apps.
+- Responsive layout testing across desktop, tablet, and mobile viewport sizes.
+- Cross-browser compatibility testing; execute this plan in Google Chrome only.
 - Real order placement.
 - Real payment card processing.
 - Real refund validation.
@@ -62,13 +63,13 @@ The following areas are not covered:
 - Load, stress, and scalability testing.
 - Full security penetration testing.
 - Direct API testing outside requests naturally triggered by the website.
+- Cookie banner behavior.
 
 ## 4. Features to be Tested
 
 The following features should be tested:
 
 - Home page load and main content.
-- Cookie banner accept/opt-out behavior.
 - Delivery/Takeout toggle.
 - Address input and location search.
 - `Use my location` behavior, including browser permission handling.
@@ -98,7 +99,7 @@ Testing should be performed against the public production website.
 - URL: [https://eatstreet.com/](https://eatstreet.com/)
 - Primary browser: Google Chrome latest version
 - Tools:
-  - Chrome/Edge DevTools
+  - Chrome DevTools
   - Network tab
   - Console tab
 
@@ -148,8 +149,7 @@ Do not use real card data. Do not submit a real order unless explicitly approved
 - Verify address input is visible with `Enter Your Address`.
 - Verify `Use my location` is visible.
 - Verify `Get Fed` is visible.
-- Verify the cookie banner can be accepted with `Got it`.
-- Verify no critical UI elements are hidden behind the cookie banner or chat widget.
+- Verify no critical UI elements are hidden behind the chat widget.
 - Verify no blocking JavaScript errors appear in the console.
 
 ### 7.2 Address Search
@@ -264,18 +264,7 @@ Do not use real card data. Do not submit a real order unless explicitly approved
   - App Store
 - Verify external links open without breaking the current site flow.
 
-### 7.11 Responsive Checks
-
-- Repeat core checks on desktop, tablet, and mobile viewport sizes.
-- Verify header remains usable.
-- Verify address search remains usable.
-- Verify restaurant filters and categories are accessible.
-- Verify restaurant cards are readable.
-- Verify menu item selection is possible.
-- Verify cart and checkout entry are usable.
-- Verify no horizontal scrolling or overlapping controls on common mobile widths.
-
-### 7.12 Error Handling
+### 7.11 Error Handling
 
 - Monitor console during the main flow.
 - Verify third-party script failures do not block ordering flow.
@@ -395,7 +384,137 @@ Known frontend/network observations:
 - API responses should not expose obvious sensitive user or payment data.
 - Request payloads must not include real card data during testing.
 
-## 9. Entry Criteria
+## 9. Team Test Case Groups
+
+The test cases should be split across a team of 9 testers. Each tester receives one group with 3 UI test cases and 3 API/network validation cases. API/network checks must be validated only through requests triggered by normal website usage.
+
+### Group 1: Home Page and Initial Load
+
+UI test cases:
+
+- Verify home page load, title, EatStreet logo, and main search area.
+- Verify primary marketing content is visible below the search area.
+- Verify header elements: `Partner with us`, `Sign In`, `Cart`, Delivery/Takeout toggle, and `Get Fed`.
+
+API/network test cases:
+
+- Verify `GET /api/v2/order-session-info` returns `200`.
+- Verify `GET /api/v2/user` returns `200`.
+- Verify `GET /api/v2/locale-alerts` returns `200`.
+
+### Group 2: Address Search and Order Mode
+
+UI test cases:
+
+- Verify Delivery is selected by default and Takeout can be selected.
+- Verify `Enter Your Address` accepts `Madison, WI`.
+- Verify `Use my location` is visible and permission behavior does not block manual search.
+
+API/network test cases:
+
+- Verify `GET /api/v2/warm-address-search-cache` returns `200`.
+- Verify address lookup requests are triggered after entering a valid address.
+- Verify `GET /api/v2/address/geocode?address=Madison,+WI` returns a successful response when triggered by the UI.
+
+### Group 3: Restaurant Listing
+
+UI test cases:
+
+- Verify restaurant search results load for `Madison, WI`.
+- Verify restaurant cards are visible and contain useful restaurant details.
+- Verify filters or category controls are visible and can be selected.
+
+API/network test cases:
+
+- Verify `GET /api/v2/restaurant-cards/nearby?...` returns `200`.
+- Verify promotion or banner requests return successful responses or fail gracefully.
+- Verify restaurant list API failures do not show broken UI or raw errors.
+
+### Group 4: Restaurant Detail and Menu
+
+UI test cases:
+
+- Open `Amber Indian Cuisine` and verify restaurant name and details.
+- Verify Menu, Reviews, and Hours tabs are visible and usable.
+- Verify menu search accepts `samosa` and matching menu items remain visible.
+
+API/network test cases:
+
+- Verify `GET /api/v2/restaurants/amber-indian-cuisine?...` returns `200`.
+- Verify `GET /api/v2/locales/madison-wi` returns `200`.
+- Verify `GET /api/v2/restaurants/amber-indian-cuisine/menu?isWhiteLabelContext=false` returns `200`.
+
+### Group 5: Item Options and Add to Cart
+
+UI test cases:
+
+- Open `1. Vegetable Samosa (2 Pieces)` from the menu.
+- Verify item options page shows title, description, price, and navigation controls.
+- Add the item to cart and verify the cart count and subtotal update.
+
+API/network test cases:
+
+- Verify `GET /api/v2/products/12772049/options` returns `200`.
+- Verify `GET /api/v2/products/12772049` returns `200`.
+- Verify product API responses support the displayed item name and price.
+
+### Group 6: Cart Management
+
+UI test cases:
+
+- Verify cart panel displays selected item, quantity, and subtotal.
+- Verify item quantity can be updated when controls are available.
+- Verify removing all items returns the cart to an empty state.
+
+API/network test cases:
+
+- Verify cart/session requests triggered by add-to-cart complete successfully.
+- Verify order summary totals match UI item prices after cart changes.
+- Verify failed or delayed cart-related requests do not leave stale totals visible.
+
+### Group 7: Checkout Entry and Authentication Gate
+
+UI test cases:
+
+- Add one item and click `Proceed to Checkout`.
+- Verify unauthenticated users are redirected to the sign-in flow.
+- Verify cart summary is preserved at the checkout/sign-in gate.
+
+API/network test cases:
+
+- Verify `GET /api/v2/account-session/configs` returns `200`.
+- Verify `POST /api/v2/account-session/new` returns `200` when triggered by the UI.
+- Verify checkout redirects are expected and do not expose payment or private data.
+
+### Group 8: Invalid and Edge-Case Search
+
+UI test cases:
+
+- Verify invalid address input such as `asdfghjkl 12345` shows validation or no-results behavior.
+- Verify partial input such as `Mad` shows useful suggestions or clear behavior.
+- Verify whitespace and case variants of valid locations are handled correctly.
+
+API/network test cases:
+
+- Verify invalid address requests do not return unhandled `5xx` errors.
+- Verify empty or incomplete search input does not navigate to a broken results page.
+- Verify user-facing error states correspond to failed or empty API responses.
+
+### Group 9: Footer, Public Links, and Third-Party Monitoring
+
+UI test cases:
+
+- Verify footer sections: EatStreet, Support, Legal, and Get the App.
+- Verify `Get The App`, Google Play, and App Store links open correct destinations.
+- Verify support, legal, careers, and partner links open expected public destinations.
+
+API/network test cases:
+
+- Monitor Google Maps, Salesforce chat, Stripe, Forter, New Relic, TikTok, and TurnTo requests.
+- Document third-party failures such as TikTok timeout or TurnTo `404` if reproducible.
+- Verify third-party failures do not block search, menu, cart, or checkout entry.
+
+## 10. Entry Criteria
 
 Testing can start when:
 
@@ -405,7 +524,7 @@ Testing can start when:
 - Tester understands that backend, database, real payment, and real delivery validation are out of scope.
 - No real order will be submitted unless explicitly approved.
 
-## 10. Exit Criteria
+## 11. Exit Criteria
 
 Testing can be considered complete when:
 
@@ -420,7 +539,7 @@ Testing can be considered complete when:
 - No blocker issues are found in search, restaurant list, menu, cart, and checkout entry flows.
 - All found defects include steps to reproduce, actual result, expected result, environment, screenshots, and network evidence where useful.
 
-## 11. Deliverables
+## 12. Deliverables
 
 The expected testing deliverables are:
 
