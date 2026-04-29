@@ -1,5 +1,21 @@
 # EatStreet TestRail Case Validation Draft
 
+## Table of Contents
+
+- [Purpose](#purpose)
+- [API Payload Examples](#api-payload-examples)
+- [Group Summary](#group-summary)
+- [Team Groups](#team-groups)
+  - [Group 1: Home Page and Initial Load](#group-1-home-page-and-initial-load)
+  - [Group 2: Address Search and Order Mode](#group-2-address-search-and-order-mode)
+  - [Group 3: Restaurant Listing](#group-3-restaurant-listing)
+  - [Group 4: Restaurant Detail and Menu](#group-4-restaurant-detail-and-menu)
+  - [Group 5: Item Options and Add to Cart](#group-5-item-options-and-add-to-cart)
+  - [Group 6: Cart Management](#group-6-cart-management)
+  - [Group 7: Checkout Entry and Authentication Gate](#group-7-checkout-entry-and-authentication-gate)
+  - [Group 8: Invalid and Edge-Case Search](#group-8-invalid-and-edge-case-search)
+  - [Group 9: Footer, Public Links, and Public API Baseline](#group-9-footer-public-links-and-public-api-baseline)
+
 ## Purpose
 
 This temporary document is for team validation before updating TestRail. Do not sync these changes to TestRail until the team approves the grouped cases.
@@ -20,121 +36,75 @@ Validation rules:
 - Cookie banner behavior is not a pass/fail condition, but automation may need to dismiss or bypass it before clicking page controls because it can intercept pointer events.
 - Do not place a real order.
 - Do not use real payment data.
-- API/network cases must be validated only through requests triggered by normal website usage.
+- API/network cases must be executed as isolated API tests using direct HTTP requests only (no UI interaction).
+- API/network case titles and assertions must include explicit HTTP method and route path so each case can be reproduced in any API test client.
 - Test steps must use real visible UI labels or verified URLs.
 
-## Site Map Alignment and Preconditions
+## API Payload Examples
 
-`documentation/SITE_MAP.md` corresponds to the EatStreet project scope for black-box, user-facing testing. It supports the current grouping around location-based discovery, restaurant listing, restaurant detail, menu browsing, item configuration, cart behavior, checkout entry, authentication gate, support/footer links, city pages, partner links, careers, and app links.
+Use these request fixtures for API-only automation. Replace placeholder values with environment-specific values when needed.
 
-Site map areas that must stay caveated or out of scope unless explicitly approved:
+Base variables:
 
-- Account profile, saved addresses, saved payment methods, order history, re-order, and post-order issue flows require a safe authenticated account.
-- Real payment form submission, `Place Order`, order confirmation, and delivery fulfillment are out of scope for this study pass.
-- Restaurant Dashboard and internal merchant tools are not publicly testable from the customer web flow.
-- Group order, tip selector, coupon, and schedule-order behavior should be tested only if the UI appears safely before payment/order submission.
+- `{{baseUrl}} = https://eatstreet.com`
+- `{{madisonLat}} = 43.0731`
+- `{{madisonLng}} = -89.4012`
+- `{{placeId}} = ChIJ7cv00DwsDogRAMDACa2m4K8`
 
-Use these preconditions when converting draft cases into TestRail case preconditions:
+Query fixture example for `GET /api/v2/restaurant-cards/nearby`:
 
-- If the cookie banner is displayed and blocks interaction, dismiss it before executing the case. Cookie banner behavior is out of scope and should not affect pass/fail unless it prevents core site usage after dismissal.
-- Home and footer cases require only public site availability.
-- Address/search cases require a public browser session and test location `Madison, WI`.
-- Restaurant listing cases require successful navigation from `Madison, WI` to `/restaurants/search?espPageNumber=1`.
-- Restaurant/menu/item cases require `Amber Indian Cuisine` to be reachable at `/madison-wi/restaurants/amber-indian-cuisine`.
-- Cart cases require a safe menu item, currently `1. Vegetable Samosa (2 Pieces)` at `$4.95`.
-- Checkout-gate cases require at least one cart item and must stop before payment or real order submission.
-- API/network cases require DevTools or Playwright network monitoring and must use requests triggered by normal UI actions.
+```text
+{{baseUrl}}/api/v2/restaurant-cards/nearby?lat={{madisonLat}}&lng={{madisonLng}}&delivery=true&takeout=false&page=1
+```
 
-## Playwright Evidence
+Query fixture example for `GET /api/v2/active-promotion/coordinates`:
 
-Verified live homepage elements:
+```text
+{{baseUrl}}/api/v2/active-promotion/coordinates?lat={{madisonLat}}&lng={{madisonLng}}
+```
 
-- `EatStreet Logo`
-- `Partner with us`
-- `Sign In`
-- `Cart`
-- `Delivery`
-- `Takeout`
-- `Enter Your Address`
-- `Use my location`
-- `Get Fed`
-- `Get The App`
-- footer sections `EatStreet`, `Support`, `Legal`, `Get the App`
-- footer links `Get app in Google Play` and `Get app in App Store`
+Body fixture template for `POST /api/v2/actual-fees-for-order`:
 
-Verified live flows:
+```json
+{
+  "orderItems": [
+    {
+      "productId": 12772049,
+      "quantity": 1,
+      "unitPrice": 4.95
+    }
+  ],
+  "restaurantSlug": "amber-indian-cuisine",
+  "localeSlug": "madison-wi",
+  "serviceType": "delivery"
+}
+```
 
-- `Madison, WI` search navigates to `/restaurants/search?espPageNumber=1`.
-- Search results show `Madison Restaurants That Deliver & Takeout`.
-- Search results show filters `Open Now`, `Free Delivery`, `Rating 4+`, `Order Ahead`, `Specials`.
-- Search results show `317 matching restaurants near you`.
-- `Amber Indian Cuisine` page loads at `/madison-wi/restaurants/amber-indian-cuisine`.
-- Restaurant page shows `Menu`, `Reviews`, `Hours`, `Your Order`, and `Proceed to Checkout $0.00`.
-- Product page loads for `1. Vegetable Samosa (2 Pieces)` at `/options/12772049`.
-- Product page shows `Back to Menu`, `Cancel`, and `Add to Cart - $4.95`.
-- Adding `1. Vegetable Samosa (2 Pieces)` updates header cart count to `Cart 1`.
+Body fixture template for `POST /api/v2/ab-request-batch`:
 
-Verified API/network calls:
+```json
+{
+  "requests": [
+    {
+      "requestName": "homepage_experiment",
+      "context": {
+        "locale": "madison-wi",
+        "platform": "web"
+      }
+    }
+  ]
+}
+```
 
-- `GET /api/v2/order-session-info` returned `200`.
-- `GET /api/v2/user` returned `200`.
-- `GET /api/v2/locale-alerts` returned `200`.
-- `GET /api/v2/cities-by-state` returned `200`.
-- `GET /api/v2/warm-address-search-cache` returned `200`.
-- `POST /api/v2/ab-request-batch` returned `200`.
-- `POST /api/v2/actual-fees-for-order` returned `200`.
-- `GET /api/v2/lookup-place-id/{placeId}` returned `200`.
-- `GET /api/v2/address/geocode?address=Madison,+WI` returned `200`.
-- `GET /api/v2/restaurant-cards/nearby?...` returned `200`.
-- `GET /api/v2/active-promotion/coordinates?...` returned `200`.
-- `GET /api/v2/reordering/candidates/5` returned `200`.
-- `GET /api/v2/marketing/restaurant-list-banner/active/universal` returned `200`.
-- `GET /api/v2/promotions/active/locale/1` returned `200`.
-- `GET /api/v2/marketing/restaurant-list-banner/active/locale/1` returned `200`.
-- `GET /api/v2/restaurants/amber-indian-cuisine?...` returned `200`.
-- `GET /api/v2/locales/madison-wi` returned `200`.
-- `GET /api/v2/promotions/active/restaurant/43071` returned `200`.
-- `GET /api/v2/restaurants/nearby?...` returned `200`.
-- `GET /api/v2/restaurants/amber-indian-cuisine/menu?isWhiteLabelContext=false` returned `200`.
-- `GET /api/v2/products/12772049/options` returned `200`.
-- `GET /api/v2/products/12772049` returned `200`.
-- TikTok analytics requests failed with `net::ERR_ABORTED`; monitor only unless user-facing behavior is affected.
+Body fixture template for `POST /api/v2/account-session/new`:
 
-## Current TestRail Case Review
-
-
-| Case  | Current title                                   | Proposed action                                                                            |
-| ----- | ----------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `C56` | Home Page Accessibility                         | Rewrite as homepage smoke/accessibility case without cookie banner validation.             |
-| `C54` | Delivery Address Selection                      | Rewrite; current steps assume guest checkout and contain `Adress Info`.                    |
-| `C46` | Cart Interface Visibility                       | Keep with clarified expected empty cart state and real `Cart` label.                       |
-| `C47` | Add Single Item to Cart                         | Rewrite; current expected result has typo `clockable` and should use verified samosa data. |
-| `C48` | Add Multiple Items from Same Restaurant         | Keep after confirming second item data during team execution.                              |
-| `C50` | Remove Item from Cart                           | Keep after confirming remove/decrement controls during team execution.                     |
-| `C51` | Empty Cart State                                | Keep with clarified `Famished? Fill me up!` empty state.                                   |
-| `C52` | Order Summary Calculation Accuracy              | Rewrite; current subtotal/fee wording is incorrect.                                        |
-| `C53` | Cart Order Ahead Action                         | Lower priority unless a closed order-ahead restaurant is verified.                         |
-| `C57` | Search Field Presence and Input                 | Keep with `Enter Your Address` and `Madison, WI`.                                          |
-| `C58` | Restaurant Sign Up Partnership Link Redirection | Rewrite using verified `Partner with us`, `Sign Up Your Restaurant`, and `Learn More`.     |
-| `C59` | Join Link Redirection (Jobs)                    | Rewrite using verified `Join Our Team` and `Apply Now`; no `Join` link exists.             |
-| `C60` | Mobile App Link Redirection                     | Keep with verified `Get The App`, Google Play, and App Store links.                        |
-| `C61` | Sign-In Element Availability                    | Keep with verified `Sign In` header element.                                               |
-| `C62` | Delivery and Takeout Toggle Behavior            | Keep.                                                                                      |
-| `C63` | Search Execution with Valid Input               | Keep with verified navigation and network calls.                                           |
-| `C64` | Search Execution with Invalid Input             | Keep, but validate exact message during execution.                                         |
-| `C65` | Valid Phone Number with Formatting Characters   | Lower priority; depends on app landing page SMS UI.                                        |
-| `C70` | Invalid Numeric Sequence Validation             | Lower priority; depends on app landing page SMS UI.                                        |
-| `C71` | Filter by Valid City Name                       | Keep if city/neighborhood filter exists during execution.                                  |
-| `C72` | City Filtering Case Sensitivity                 | Keep.                                                                                      |
-| `C73` | Search for City with No Results                 | Keep, but choose stable no-results location during execution.                              |
-| `C74` | Invalid Location Input Handling                 | Keep.                                                                                      |
-| `C76` | Partial City Name Matching                      | Keep.                                                                                      |
-| `C77` | Location Search with Whitespace Handling        | Keep.                                                                                      |
-| `C80` | Modify Item Quantity in Cart                    | Keep after validating cart controls.                                                       |
-| `C81` | Minimum Order Value Validation                  | Lower priority unless a restaurant with visible minimum order is verified.                 |
-| `C82` | Final Order Placement Success                   | Replace; real order placement is out of scope.                                             |
-| `C83` | Cart Persistence During Navigation              | Keep.                                                                                      |
-
+```json
+{
+  "origin": "web",
+  "intent": "checkout",
+  "locale": "madison-wi"
+}
+```
 
 ## Group Summary
 
@@ -151,7 +121,7 @@ Each group is intended for one team member and contains 3 UI cases plus 3 API/ne
 | Group 6 | Cart Management                                  | Cart visibility, empty state, persistence                                               | Cart may start empty; cart update cases require adding `1. Vegetable Samosa (2 Pieces)` first     | 3        | 3                 |
 | Group 7 | Checkout Entry and Authentication Gate           | Checkout start, sign-in gate, replacement for real order placement                      | At least one cart item exists; stop before payment or order submission                            | 3        | 3                 |
 | Group 8 | Invalid and Edge-Case Search                     | Invalid input, partial input, whitespace/case handling                                  | Public site is reachable; invalid and edge-case data is non-sensitive                             | 3        | 3                 |
-| Group 9 | Footer, Public Links, and Third-Party Monitoring | Footer sections, app links, support/legal/careers/partner links, third-party monitoring | Public site is reachable; no account or order state required                                      | 3        | 3                 |
+| Group 9 | Footer, Public Links, and Public API Baseline    | Footer sections, app links, support/legal/careers/partner links, public baseline APIs   | Public site is reachable; no account or order state required                                      | 3        | 3                 |
 
 
 Common automation note for all groups:
@@ -218,45 +188,42 @@ Expected:
 - Primary marketing content renders below the search area.
 - The page does not show broken or empty content blocks.
 
-#### G1-API-01: Order Session Info Request
+#### G1-API-01: GET /api/v2/order-session-info - Order Session Info
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor network requests.
-3. Find `GET /api/v2/order-session-info`.
+1. Send `GET {{baseUrl}}/api/v2/order-session-info` from an API test client.
+2. Validate response status and body.
 
 Expected:
 
 - Request returns `200`.
 - Response does not expose payment data.
 
-#### G1-API-02: Anonymous User Request
+#### G1-API-02: GET /api/v2/user - Anonymous User
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor network requests.
-3. Find `GET /api/v2/user`.
+1. Send `GET {{baseUrl}}/api/v2/user` from an API test client.
+2. Validate response status and anonymous user payload.
 
 Expected:
 
 - Request returns `200`.
-- Anonymous state is handled without blocking homepage rendering.
+- Anonymous state is returned without requiring UI-driven authentication flow.
 
-#### G1-API-03: Locale Alerts Request
+#### G1-API-03: GET /api/v2/locale-alerts - Locale Alerts
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor network requests.
-3. Find `GET /api/v2/locale-alerts`.
+1. Send `GET {{baseUrl}}/api/v2/locale-alerts` from an API test client.
+2. Validate response status and payload shape.
 
 Expected:
 
@@ -322,51 +289,47 @@ Expected:
 - User is navigated to the restaurant search page.
 - Search results are for Madison.
 
-#### G2-API-01: Warm Address Search Cache
+#### G2-API-01: GET /api/v2/warm-address-search-cache - Warm Address Search Cache
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor network requests.
-3. Find `GET /api/v2/warm-address-search-cache`.
+1. Send `GET {{baseUrl}}/api/v2/warm-address-search-cache` from an API test client.
+2. Validate response status and response time.
 
 Expected:
 
 - Request returns `200`.
 - Failure does not block manual address entry.
 
-#### G2-API-02: Place ID Lookup
+#### G2-API-02: GET /api/v2/lookup-place-id/{placeId} - Place ID Lookup
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Type `Madison, WI`.
-3. Monitor requests triggered by autocomplete.
-4. Find `GET /api/v2/lookup-place-id/{placeId}`.
+1. Set a known `placeId` variable and send `GET {{baseUrl}}/api/v2/lookup-place-id/{{placeId}}` from an API test client.
+2. Validate response status and place payload.
 
 Expected:
 
 - Lookup request returns `200`.
-- The UI can continue to `Get Fed`.
+- Place lookup payload is returned for downstream address resolution.
 
-#### G2-API-03: Address Geocode
+#### G2-API-03: GET /api/v2/address/geocode - Address Geocode
 
 Source: new API case
 
 Steps:
 
-1. Search for `Madison, WI` from the homepage.
-2. Monitor network requests.
-3. Find `GET /api/v2/address/geocode?address=Madison,+WI`.
+1. Send `GET {{baseUrl}}/api/v2/address/geocode?address=Madison,+WI` from an API test client.
+2. Validate response status and geocode payload.
 
 Expected:
 
 - Request returns `200`.
-- Search proceeds to restaurant results.
+- Geocode response includes valid location coordinates.
 
 ### Group 3: Restaurant Listing
 
@@ -425,45 +388,42 @@ Expected:
 - Pagination controls are visible.
 - No overlapping or broken layout appears near pagination.
 
-#### G3-API-01: Restaurant Cards Nearby
+#### G3-API-01: GET /api/v2/restaurant-cards/nearby - Restaurant Cards Nearby
 
 Source: new API case
 
 Steps:
 
-1. Search for `Madison, WI`.
-2. Monitor network requests.
-3. Find `GET /api/v2/restaurant-cards/nearby?...`.
+1. Send `GET {{baseUrl}}/api/v2/restaurant-cards/nearby` using the query fixture from `API Payload Examples`.
+2. Validate response status and restaurant card list payload.
 
 Expected:
 
 - Request returns `200`.
-- Restaurant cards render from the response.
+- Restaurant card data is present and parseable for automation assertions.
 
-#### G3-API-02: Active Promotion by Coordinates
+#### G3-API-02: GET /api/v2/active-promotion/coordinates - Active Promotion by Coordinates
 
 Source: new API case
 
 Steps:
 
-1. Search for `Madison, WI`.
-2. Monitor network requests.
-3. Find `GET /api/v2/active-promotion/coordinates?...`.
+1. Send `GET {{baseUrl}}/api/v2/active-promotion/coordinates` using the query fixture from `API Payload Examples`.
+2. Validate response status and payload structure.
 
 Expected:
 
 - Request returns `200`.
-- Promotion data does not block restaurant list rendering.
+- Promotion response is returned without endpoint failure.
 
-#### G3-API-03: Restaurant List Banner
+#### G3-API-03: GET /api/v2/marketing/restaurant-list-banner/active/universal - Restaurant List Banner
 
 Source: new API case
 
 Steps:
 
-1. Search for `Madison, WI`.
-2. Monitor network requests.
-3. Find `GET /api/v2/marketing/restaurant-list-banner/active/universal`.
+1. Send `GET {{baseUrl}}/api/v2/marketing/restaurant-list-banner/active/universal` from an API test client.
+2. Validate response status and payload type.
 
 Expected:
 
@@ -528,50 +488,47 @@ Expected:
 - Menu items and prices are visible.
 - Item names match the menu data.
 
-#### G4-API-01: Restaurant Details Request
+#### G4-API-01: GET /api/v2/restaurants/amber-indian-cuisine - Restaurant Details
 
 Source: new API case
 
 Steps:
 
-1. Open the `Amber Indian Cuisine` page.
-2. Monitor network requests.
-3. Find `GET /api/v2/restaurants/amber-indian-cuisine?...`.
+1. Send `GET {{baseUrl}}/api/v2/restaurants/amber-indian-cuisine` with required query params from an API test client.
+2. Validate response status and restaurant payload.
 
 Expected:
 
 - Request returns `200`.
-- Restaurant details render successfully.
+- Restaurant detail payload is returned with expected restaurant identity fields.
 
-#### G4-API-02: Locale Request
+#### G4-API-02: GET /api/v2/locales/madison-wi - Locale Data
 
 Source: new API case
 
 Steps:
 
-1. Open the `Amber Indian Cuisine` page.
-2. Monitor network requests.
-3. Find `GET /api/v2/locales/madison-wi`.
+1. Send `GET {{baseUrl}}/api/v2/locales/madison-wi` from an API test client.
+2. Validate response status and locale payload.
 
 Expected:
 
 - Request returns `200`.
 - Locale-specific page data loads.
 
-#### G4-API-03: Restaurant Menu Request
+#### G4-API-03: GET /api/v2/restaurants/amber-indian-cuisine/menu - Restaurant Menu
 
 Source: new API case
 
 Steps:
 
-1. Open the `Amber Indian Cuisine` page.
-2. Monitor network requests.
-3. Find `GET /api/v2/restaurants/amber-indian-cuisine/menu?isWhiteLabelContext=false`.
+1. Send `GET {{baseUrl}}/api/v2/restaurants/amber-indian-cuisine/menu?isWhiteLabelContext=false` from an API test client.
+2. Validate response status and menu payload.
 
 Expected:
 
 - Request returns `200`.
-- Menu categories and items render.
+- Menu categories and items are returned in the response body.
 
 ### Group 5: Item Options and Add to Cart
 
@@ -632,45 +589,42 @@ Expected:
 - Item is added to cart.
 - Cart count and order panel update.
 
-#### G5-API-01: Product Options Request
+#### G5-API-01: GET /api/v2/products/12772049/options - Product Options
 
 Source: new API case
 
 Steps:
 
-1. Open `1. Vegetable Samosa (2 Pieces)` options.
-2. Monitor network requests.
-3. Find `GET /api/v2/products/12772049/options`.
+1. Send `GET {{baseUrl}}/api/v2/products/12772049/options` from an API test client.
+2. Validate response status and option groups payload.
 
 Expected:
 
 - Request returns `200`.
-- Product options page can render.
+- Product option data is present for automation validation.
 
-#### G5-API-02: Product Details Request
+#### G5-API-02: GET /api/v2/products/12772049 - Product Details
 
 Source: new API case
 
 Steps:
 
-1. Open `1. Vegetable Samosa (2 Pieces)` options.
-2. Monitor network requests.
-3. Find `GET /api/v2/products/12772049`.
+1. Send `GET {{baseUrl}}/api/v2/products/12772049` from an API test client.
+2. Validate response status, product name, and price fields.
 
 Expected:
 
 - Request returns `200`.
 - Product name and price match the UI.
 
-#### G5-API-03: Add-to-Cart Fee Calculation
+#### G5-API-03: POST /api/v2/actual-fees-for-order - Add-to-Cart Fee Calculation
 
 Source: new API case
 
 Steps:
 
-1. Add `1. Vegetable Samosa (2 Pieces)` to cart.
-2. Monitor network requests.
-3. Find `POST /api/v2/actual-fees-for-order`.
+1. Send `POST {{baseUrl}}/api/v2/actual-fees-for-order` using the body fixture from `API Payload Examples`.
+2. Validate response status and fee calculation fields.
 
 Expected:
 
@@ -735,50 +689,48 @@ Expected:
 
 - Cart count and selected item persist during normal navigation.
 
-#### G6-API-01: Order Session After Cart Update
+#### G6-API-01: GET /api/v2/order-session-info - Session After Cart Update
 
 Source: new API case
 
 Steps:
 
-1. Add an item to cart.
-2. Monitor network requests.
-3. Verify session-related requests complete successfully.
+1. Send `GET {{baseUrl}}/api/v2/order-session-info` from an API test client.
+2. Validate response status and session payload consistency.
 
 Expected:
 
-- No `5xx` response occurs.
-- Cart state remains consistent in the UI.
+- `GET /api/v2/order-session-info` returns `200`.
+- Session payload remains structurally valid for API automation.
 
-#### G6-API-02: Order Summary Totals
+#### G6-API-02: POST /api/v2/actual-fees-for-order - Order Summary Totals
 
 Source: update `C52`
 
 Steps:
 
-1. Add `1. Vegetable Samosa (2 Pieces)` to cart.
-2. Observe item price and subtotal.
-3. Monitor network requests related to totals or fees.
+1. Send `POST {{baseUrl}}/api/v2/actual-fees-for-order` using the body fixture from `API Payload Examples` with one samosa line item priced at `$4.95`.
+2. Validate response status and totals fields.
 
 Expected:
 
+- `POST /api/v2/actual-fees-for-order` returns `200`.
 - Item subtotal matches `$4.95` before taxes or fees.
 - Any fees appear as separate line items, not as part of item subtotal.
 
-#### G6-API-03: Cart Request Error Handling
+#### G6-API-03: POST /api/v2/ab-request-batch - Non-Critical Request Error Handling
 
 Source: new API case
 
 Steps:
 
-1. Add and remove an item from the cart.
-2. Monitor cart and fee-related network requests.
-3. Check the UI after each operation.
+1. Send `POST {{baseUrl}}/api/v2/ab-request-batch` using the body fixture from `API Payload Examples`.
+2. Repeat with intentionally degraded payload input to validate controlled failure handling.
 
 Expected:
 
-- Failed or delayed non-critical requests do not leave stale totals visible.
-- No raw API error is shown to the user.
+- Failed or delayed `POST /api/v2/ab-request-batch` requests do not leave stale totals visible.
+- Endpoint returns controlled API behavior (success or non-5xx validation error), without unhandled server failure.
 
 ### Group 7: Checkout Entry and Authentication Gate
 
@@ -838,50 +790,47 @@ Expected:
 - Test does not submit payment or place a real order.
 - Cart state is preserved at the gate.
 
-#### G7-API-01: Account Session Config
+#### G7-API-01: GET /api/v2/account-session/configs - Account Session Config
 
 Source: new API case
 
 Steps:
 
-1. Start checkout from a cart with one item.
-2. Monitor network requests.
-3. Find `GET /api/v2/account-session/configs` if triggered by the auth flow.
+1. Send `GET {{baseUrl}}/api/v2/account-session/configs` from an API test client.
+2. Validate response status and auth-config payload.
 
 Expected:
 
-- Request returns `200` when triggered.
+- Request returns `200`.
 - Auth configuration loads without exposing sensitive data.
 
-#### G7-API-02: Account Session Creation
+#### G7-API-02: POST /api/v2/account-session/new - Account Session Creation
 
 Source: new API case
 
 Steps:
 
-1. Start checkout from a cart with one item.
-2. Monitor network requests.
-3. Find `POST /api/v2/account-session/new` if triggered by the auth flow.
+1. Send `POST {{baseUrl}}/api/v2/account-session/new` using the body fixture from `API Payload Examples`.
+2. Validate response status and session creation payload.
 
 Expected:
 
-- Request returns `200` when triggered.
-- Redirect or auth state is handled cleanly.
+- Request returns `200`.
+- Session creation response is returned without unhandled errors.
 
-#### G7-API-03: Checkout Redirect Safety
+#### G7-API-03: GET /api/v2/user - Checkout Redirect Safety
 
 Source: new API case
 
 Steps:
 
-1. Start checkout as an unauthenticated user.
-2. Monitor redirects and network requests.
-3. Inspect the resulting URL and request payloads.
+1. Send `GET {{baseUrl}}/api/v2/user` without authenticated credentials from an API test client.
+2. Validate response status and anonymous-user payload fields.
 
 Expected:
 
-- Redirect is expected for unauthenticated users.
-- No real card data or sensitive private data is sent.
+- `GET /api/v2/user` returns `200` with anonymous user state.
+- No sensitive private data is present in the response payload.
 
 ### Group 8: Invalid and Edge-Case Search
 
@@ -940,53 +889,48 @@ Expected:
 - Valid location is accepted regardless of case.
 - Leading or trailing whitespace does not break search.
 
-#### G8-API-01: Invalid Address Does Not Produce 5xx
+#### G8-API-01: GET /api/v2/address/geocode - Invalid Address Handling
 
 Source: new API case
 
 Steps:
 
-1. Search for `asdfghjkl 12345`.
-2. Monitor network requests.
-3. Check address lookup/geocode responses.
+1. Send `GET {{baseUrl}}/api/v2/address/geocode?address=asdfghjkl+12345` from an API test client.
+2. Validate response status and controlled invalid-location payload behavior.
 
 Expected:
 
-- No unhandled `5xx` responses occur.
-- UI shows a controlled error or no-results state.
+- `GET /api/v2/address/geocode` does not return `5xx`.
+- Response returns a controlled no-match or validation outcome.
 
-#### G8-API-02: Empty Search Handling
+#### G8-API-02: GET /api/v2/restaurant-cards/nearby - Empty Search Guard
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Leave `Enter Your Address` empty.
-3. Click `Get Fed`.
-4. Monitor network requests.
+1. Send `GET {{baseUrl}}/api/v2/restaurant-cards/nearby` with missing/empty required query parameters (example: omit `lat` and `lng` from the query fixture in `API Payload Examples`).
+2. Validate response status and error payload.
 
 Expected:
 
-- UI prevents broken navigation.
-- No unnecessary restaurant list API request is sent for empty input.
+- Endpoint returns controlled validation behavior and does not return `5xx` for empty inputs.
 
-#### G8-API-03: No-Results Location Handling
+#### G8-API-03: GET /api/v2/restaurant-cards/nearby - No-Results Location Handling
 
 Source: update `C73`
 
 Steps:
 
-1. Search for a valid location with no expected restaurant coverage.
-2. Monitor network requests.
-3. Observe UI state.
+1. Send `GET {{baseUrl}}/api/v2/restaurant-cards/nearby` using the query fixture from `API Payload Examples`, replacing coordinates with a low/no-coverage area.
+2. Validate response status and empty/no-results payload handling.
 
 Expected:
 
-- API response is handled without raw errors.
-- UI shows no-results or unsupported-area messaging.
+- `GET /api/v2/restaurant-cards/nearby` response is handled without raw errors.
+- Response provides a controlled no-results structure (empty list or equivalent).
 
-### Group 9: Footer, Public Links, and Third-Party Monitoring
+### Group 9: Footer, Public Links, and Public API Baseline
 
 Preconditions:
 
@@ -1045,79 +989,45 @@ Expected:
 - Public informational links open expected internal or external destinations.
 - Current EatStreet page flow is not corrupted after returning.
 
-#### G9-API-01: Third-Party Request Monitoring
+#### G9-API-01: GET /api/v2/cities-by-state - Homepage Public Data
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor third-party requests.
-3. Record Google Maps, Salesforce chat, Stripe, Forter, New Relic, TikTok, and TurnTo behavior when present.
+1. Send `GET {{baseUrl}}/api/v2/cities-by-state` from an API test client.
+2. Validate response status and list payload structure.
 
 Expected:
 
-- Third-party failures are documented.
-- Search and ordering entry remain usable.
+- `GET /api/v2/cities-by-state` returns `200`.
+- State/city data is returned in a format suitable for automation assertions.
 
-#### G9-API-02: TikTok Analytics Failure Does Not Block UI
+#### G9-API-02: POST /api/v2/ab-request-batch - Experiment Batch Request
 
 Source: new API case
 
 Steps:
 
-1. Open `https://eatstreet.com/`.
-2. Monitor TikTok analytics requests.
-3. Continue through address search to restaurant results.
+1. Send `POST {{baseUrl}}/api/v2/ab-request-batch` with a valid experiment batch payload from an API test client.
+2. Validate response status and response payload.
 
 Expected:
 
-- TikTok failure, if reproduced, does not block home page or restaurant search.
+- `POST /api/v2/ab-request-batch` returns `200` or a controlled non-5xx validation response.
+- Response remains stable and parseable for API automation.
 
-#### G9-API-03: External Link Safety
+#### G9-API-03: GET /api/v2/locale-alerts - Public Link Navigation Safety
 
 Source: new API case
 
 Steps:
 
-1. Open footer links for app stores or support destinations in a new tab.
-2. Verify navigation target.
-3. Return to EatStreet page.
+1. Send `GET {{baseUrl}}/api/v2/locale-alerts` from an API test client.
+2. Validate response status and locale-alert payload.
 
 Expected:
 
-- External links open correct destinations.
-- Current EatStreet flow is not corrupted after returning.
-
-## Proposed TestRail Changes After Approval
-
-Update existing cases:
-
-- `C56`, `C54`, `C46`, `C47`, `C51`, `C52`, `C57`, `C58`, `C59`, `C60`, `C61`, `C62`, `C63`, `C64`, `C71`, `C72`, `C73`, `C74`, `C76`, `C77`, `C80`, `C82`, `C83`
-
-Lower priority or keep out of the first sync unless verified:
-
-- `C53`, `C65`, `C70`, `C81`
-
-Add new TestRail cases for API/network coverage:
-
-- All draft cases marked `new API case`
-
-Add new UI cases only where existing TestRail cases do not cover the group requirement:
-
-- All draft cases marked `new UI case`
-
-## Approval Checklist
-
-- Group 1 approved
-- Group 2 approved
-- Group 3 approved
-- Group 4 approved
-- Group 5 approved
-- Group 6 approved
-- Group 7 approved
-- Group 8 approved
-- Group 9 approved
-- Approved to update existing TestRail cases
-- Approved to add new TestRail cases
+- `GET /api/v2/locale-alerts` returns `200`.
+- Locale-alert payload is returned in a stable, automatable format.
 
