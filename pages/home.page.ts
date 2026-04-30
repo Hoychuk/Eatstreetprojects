@@ -1,5 +1,4 @@
 import { Page, Locator, expect } from "@playwright/test";
-import { step } from "../framework-utils/step-decorator";
 
 export class HomePage {
   public readonly homeUrl = "https://eatstreet.com/";
