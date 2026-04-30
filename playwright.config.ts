@@ -1,11 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const isHeadless = process.env.PLAYWRIGHT_HEADLESS === "true";
+
 export default defineConfig({
   timeout: 90000,
   workers: 1,
   retries: 0,
   use: {
-    headless: false,
+    headless: isHeadless,
     screenshot: "only-on-failure",
     video: { mode: "retain-on-failure", size: { width: 640, height: 360 } },
   },
