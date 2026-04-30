@@ -50,7 +50,6 @@ const projects = [
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
-  ],
 
 const config: PlaywrightTestConfig = {
   projects,
