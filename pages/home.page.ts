@@ -50,10 +50,6 @@ export class HomePage {
     return this.suggesstionsBlock.getByText(suggestion).first();
   }
 
-    await this.page.getByText(suggestion).first().click();
-    return;
-  }
-
   async submitSearch(): Promise<void> {
     await this.getFedButton.click();
   }
