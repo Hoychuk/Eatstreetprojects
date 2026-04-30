@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { HomePage } from "../../../pages/home.page";
 
-test.describe("G3-UI-01, C133", () => {
+test.describe("G3-UI-01, @C133", () => {
   test("Verify Madison, WI restaurant search", async ({ page }) => {
     const homePage = new HomePage(page);
 
