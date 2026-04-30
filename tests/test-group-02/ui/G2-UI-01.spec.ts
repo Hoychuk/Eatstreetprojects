@@ -23,7 +23,7 @@ test.describe('G2-UI-01 @C126', () => {
       await homePage.deliveryRadio.click();
     });
     
-    await test.step("", async () => {
+    await test.step("Check Adress Field", async () => {
       await expect(homePage.addressField).toBeVisible();
     })
   });
