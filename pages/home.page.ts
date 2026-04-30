@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
 
 export class HomePage {
   public readonly homeUrl = "https://eatstreet.com/";
@@ -18,6 +18,7 @@ export class HomePage {
 
   async goto() {
     await this.page.goto(this.homeUrl);
+    await expect(this.page).toHaveURL(this.homeUrl);
   }
 
   async skipCookiesBannerIfVisible() {
