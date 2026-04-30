@@ -1,18 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { EatStreetHomePage } from '../pages/eatStreetHomePage';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+test('eatstreet home page loads', async ({ page }) => {
+  const home = new EatStreetHomePage(page);
+  await home.goto();
+  await home.expectHomeTitle();
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+test('enter address and show restaurant search', async ({ page }) => {
+  const home = new EatStreetHomePage(page);
+  await home.goto();
+  await home.selectDelivery();
+  await home.enterAddress('90210');
+  await home.clickGetFed();
+  await expect(page).toHaveURL(/eatstreet\.com/);
 });
