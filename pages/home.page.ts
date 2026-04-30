@@ -8,6 +8,7 @@ export class HomePage {
   public readonly getFedButton: Locator;
   public readonly deliveryRadio: Locator;
   public readonly takeoutRadio: Locator;
+  public readonly suggesstionsBlock: Locator;
 
   constructor(private page: Page) {
     this.cookiesButton = page.locator(".cipa-overlay");
@@ -16,6 +17,7 @@ export class HomePage {
     this.getFedButton = page.getByText("Get Fed");
     this.deliveryRadio = page.getByText("Delivery", { exact: true });
     this.takeoutRadio = page.getByText("Takeout", { exact: true });
+    this.suggesstionsBlock = page.locator("autocomplete ul");
   }
 
   async goto() {
@@ -40,8 +42,12 @@ export class HomePage {
   }
 
   async selectAddressSuggestion(suggestion: string): Promise<void> {
-    await this.page.getByText(suggestion).first().click();
+    await this.suggesstionsBlock.getByText(suggestion).first().click();
     return;
+  }
+
+  getFirstAddressSuggestion(suggestion: string): Locator {
+    return this.suggesstionsBlock.getByText(suggestion).first();
   }
 
   async submitSearch(): Promise<void> {
