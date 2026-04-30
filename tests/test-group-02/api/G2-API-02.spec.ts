@@ -16,7 +16,7 @@ const testData: TestEntry[] = [
   { id: '   ', valid: false, address: '' },
 ];
 
-test.describe('G2-API-01 @C126', () => {
+test.describe('G2-API-02', () => {
   test('Place ID Lookup', async ({ request }) => {
     const api = new API(request);
     for (const entry of testData) {
