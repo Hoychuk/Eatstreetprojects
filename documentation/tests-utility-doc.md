@@ -143,7 +143,7 @@ Automation note:
 
 #### G1-UI-01: Home Page Smoke
 
-Source: update `C56`
+Source: TestRail `C120`
 
 Steps:
 
@@ -159,7 +159,7 @@ Expected:
 
 #### G1-UI-02: Header Navigation Elements
 
-Source: new UI case
+Source: TestRail `C121`
 
 Steps:
 
@@ -175,7 +175,7 @@ Expected:
 
 #### G1-UI-03: Homepage Marketing Content
 
-Source: new UI case
+Source: TestRail `C122`
 
 Steps:
 
@@ -190,7 +190,7 @@ Expected:
 
 #### G1-API-01: GET /api/v2/order-session-info - Order Session Info
 
-Source: new API case
+Source: TestRail `C123`
 
 Steps:
 
@@ -204,7 +204,7 @@ Expected:
 
 #### G1-API-02: GET /api/v2/user - Anonymous User
 
-Source: new API case
+Source: TestRail `C125`
 
 Steps:
 
@@ -218,7 +218,7 @@ Expected:
 
 #### G1-API-03: GET /api/v2/locale-alerts - Locale Alerts
 
-Source: new API case
+Source: TestRail `C124`
 
 Steps:
 
@@ -244,7 +244,7 @@ Automation note:
 
 #### G2-UI-01: Delivery and Takeout Toggle
 
-Source: update `C62`
+Source: TestRail `C126`
 
 Steps:
 
@@ -260,7 +260,7 @@ Expected:
 
 #### G2-UI-02: Address Field Input
 
-Source: update `C57`
+Source: TestRail `C127`
 
 Steps:
 
@@ -275,7 +275,7 @@ Expected:
 
 #### G2-UI-03: Valid Location Search
 
-Source: update `C63`
+Source: TestRail `C129`
 
 Steps:
 
@@ -291,7 +291,7 @@ Expected:
 
 #### G2-API-01: GET /api/v2/warm-address-search-cache - Warm Address Search Cache
 
-Source: new API case
+Source: TestRail `C128`
 
 Steps:
 
@@ -305,7 +305,7 @@ Expected:
 
 #### G2-API-02: GET /api/v2/lookup-place-id/{placeId} - Place ID Lookup
 
-Source: new API case
+Source: TestRail `C130`
 
 Steps:
 
@@ -319,7 +319,7 @@ Expected:
 
 #### G2-API-03: GET /api/v2/address/geocode - Address Geocode
 
-Source: new API case
+Source: TestRail `C131`
 
 Steps:
 
@@ -345,7 +345,7 @@ Automation note:
 
 #### G3-UI-01: Restaurant Results Load
 
-Source: update `C71`
+Source: TestRail `C133`
 
 Steps:
 
@@ -360,7 +360,7 @@ Expected:
 
 #### G3-UI-02: Listing Filters
 
-Source: new UI case
+Source: TestRail `C135`
 
 Steps:
 
@@ -375,7 +375,7 @@ Expected:
 
 #### G3-UI-03: Listing Pagination
 
-Source: new UI case
+Source: TestRail `C134`
 
 Steps:
 
@@ -390,7 +390,7 @@ Expected:
 
 #### G3-API-01: GET /api/v2/restaurant-cards/nearby - Restaurant Cards Nearby
 
-Source: new API case
+Source: TestRail `C132`
 
 Steps:
 
@@ -404,7 +404,7 @@ Expected:
 
 #### G3-API-02: GET /api/v2/active-promotion/coordinates - Active Promotion by Coordinates
 
-Source: new API case
+Source: TestRail `C137`
 
 Steps:
 
@@ -418,7 +418,7 @@ Expected:
 
 #### G3-API-03: GET /api/v2/marketing/restaurant-list-banner/active/universal - Restaurant List Banner
 
-Source: new API case
+Source: TestRail `C136`
 
 Steps:
 
@@ -444,7 +444,7 @@ Automation note:
 
 #### G4-UI-01: Restaurant Detail Header
 
-Source: new UI case
+Source: TestRail `C138`
 
 Steps:
 
@@ -459,7 +459,7 @@ Expected:
 
 #### G4-UI-02: Menu, Reviews, and Hours Tabs
 
-Source: new UI case
+Source: TestRail `C139`
 
 Steps:
 
@@ -475,7 +475,7 @@ Expected:
 
 #### G4-UI-03: Menu Item Visibility
 
-Source: new UI case
+Source: TestRail `C140`
 
 Steps:
 
@@ -490,7 +490,7 @@ Expected:
 
 #### G4-API-01: GET /api/v2/restaurants/amber-indian-cuisine - Restaurant Details
 
-Source: new API case
+Source: TestRail `C142`
 
 Steps:
 
@@ -504,7 +504,7 @@ Expected:
 
 #### G4-API-02: GET /api/v2/locales/madison-wi - Locale Data
 
-Source: new API case
+Source: TestRail `C143`
 
 Steps:
 
@@ -518,7 +518,7 @@ Expected:
 
 #### G4-API-03: GET /api/v2/restaurants/amber-indian-cuisine/menu - Restaurant Menu
 
-Source: new API case
+Source: TestRail `C141`
 
 Steps:
 
@@ -544,7 +544,7 @@ Automation note:
 
 #### G5-UI-01: Open Item Options
 
-Source: update `C47`
+Source: TestRail `C145`
 
 Steps:
 
@@ -559,7 +559,7 @@ Expected:
 
 #### G5-UI-02: Item Options Controls
 
-Source: new UI case
+Source: TestRail `C147`
 
 Steps:
 
@@ -575,7 +575,7 @@ Expected:
 
 #### G5-UI-03: Add Single Item to Cart
 
-Source: update `C47`
+Source: TestRail `C148`
 
 Steps:
 
@@ -591,7 +591,7 @@ Expected:
 
 #### G5-API-01: GET /api/v2/products/12772049/options - Product Options
 
-Source: new API case
+Source: TestRail `C146`
 
 Steps:
 
@@ -605,7 +605,7 @@ Expected:
 
 #### G5-API-02: GET /api/v2/products/12772049 - Product Details
 
-Source: new API case
+Source: TestRail `C144`
 
 Steps:
 
@@ -619,7 +619,7 @@ Expected:
 
 #### G5-API-03: POST /api/v2/actual-fees-for-order - Add-to-Cart Fee Calculation
 
-Source: new API case
+Source: TestRail `C149`
 
 Steps:
 
@@ -645,7 +645,7 @@ Automation note:
 
 #### G6-UI-01: Cart Interface Visibility
 
-Source: update `C46`
+Source: TestRail `C153`
 
 Steps:
 
@@ -660,7 +660,7 @@ Expected:
 
 #### G6-UI-02: Empty Cart State
 
-Source: update `C51`
+Source: TestRail `C152`
 
 Steps:
 
@@ -675,7 +675,7 @@ Expected:
 
 #### G6-UI-03: Cart Persistence During Navigation
 
-Source: update `C83`
+Source: TestRail `C150`
 
 Steps:
 
@@ -691,7 +691,7 @@ Expected:
 
 #### G6-API-01: GET /api/v2/order-session-info - Session After Cart Update
 
-Source: new API case
+Source: TestRail `C151`
 
 Steps:
 
@@ -705,7 +705,7 @@ Expected:
 
 #### G6-API-02: POST /api/v2/actual-fees-for-order - Order Summary Totals
 
-Source: update `C52`
+Source: TestRail `C155`
 
 Steps:
 
@@ -720,7 +720,7 @@ Expected:
 
 #### G6-API-03: POST /api/v2/ab-request-batch - Non-Critical Request Error Handling
 
-Source: new API case
+Source: TestRail `C154`
 
 Steps:
 
@@ -747,7 +747,7 @@ Automation note:
 
 #### G7-UI-01: Checkout Entry Starts From Cart
 
-Source: update `C54`
+Source: TestRail `C156`
 
 Steps:
 
@@ -762,7 +762,7 @@ Expected:
 
 #### G7-UI-02: Sign-In Element Availability
 
-Source: update `C61`
+Source: TestRail `C157`
 
 Steps:
 
@@ -777,7 +777,7 @@ Expected:
 
 #### G7-UI-03: Replace Real Order Placement
 
-Source: replace `C82`
+Source: TestRail `C158`
 
 Steps:
 
@@ -792,7 +792,7 @@ Expected:
 
 #### G7-API-01: GET /api/v2/account-session/configs - Account Session Config
 
-Source: new API case
+Source: TestRail `C159`
 
 Steps:
 
@@ -806,7 +806,7 @@ Expected:
 
 #### G7-API-02: POST /api/v2/account-session/new - Account Session Creation
 
-Source: new API case
+Source: TestRail `C161`
 
 Steps:
 
@@ -820,7 +820,7 @@ Expected:
 
 #### G7-API-03: GET /api/v2/user - Checkout Redirect Safety
 
-Source: new API case
+Source: TestRail `C160`
 
 Steps:
 
@@ -846,7 +846,7 @@ Automation note:
 
 #### G8-UI-01: Invalid Address Input
 
-Source: update `C74`
+Source: TestRail `C162`
 
 Steps:
 
@@ -861,7 +861,7 @@ Expected:
 
 #### G8-UI-02: Partial City Input
 
-Source: update `C76`
+Source: TestRail `C163`
 
 Steps:
 
@@ -876,7 +876,7 @@ Expected:
 
 #### G8-UI-03: Whitespace and Case Handling
 
-Source: update `C72`, `C77`
+Source: TestRail `C164`
 
 Steps:
 
@@ -891,7 +891,7 @@ Expected:
 
 #### G8-API-01: GET /api/v2/address/geocode - Invalid Address Handling
 
-Source: new API case
+Source: TestRail `C165`
 
 Steps:
 
@@ -905,7 +905,7 @@ Expected:
 
 #### G8-API-02: GET /api/v2/restaurant-cards/nearby - Empty Search Guard
 
-Source: new API case
+Source: TestRail `C166`
 
 Steps:
 
@@ -918,7 +918,7 @@ Expected:
 
 #### G8-API-03: GET /api/v2/restaurant-cards/nearby - No-Results Location Handling
 
-Source: update `C73`
+Source: TestRail `C167`
 
 Steps:
 
@@ -944,7 +944,7 @@ Automation note:
 
 #### G9-UI-01: Footer Link Sections
 
-Source: new UI case
+Source: TestRail `C170`
 
 Steps:
 
@@ -959,7 +959,7 @@ Expected:
 
 #### G9-UI-02: App Store Links
 
-Source: update `C60`
+Source: TestRail `C171`
 
 Steps:
 
@@ -975,7 +975,7 @@ Expected:
 
 #### G9-UI-03: Support, Legal, Careers, and Partner Links
 
-Source: new UI case
+Source: TestRail `C169`
 
 Steps:
 
@@ -991,7 +991,7 @@ Expected:
 
 #### G9-API-01: GET /api/v2/cities-by-state - Homepage Public Data
 
-Source: new API case
+Source: TestRail `C168`
 
 Steps:
 
@@ -1005,7 +1005,7 @@ Expected:
 
 #### G9-API-02: POST /api/v2/ab-request-batch - Experiment Batch Request
 
-Source: new API case
+Source: TestRail `C172`
 
 Steps:
 
@@ -1019,7 +1019,7 @@ Expected:
 
 #### G9-API-03: GET /api/v2/locale-alerts - Public Link Navigation Safety
 
-Source: new API case
+Source: TestRail `C173`
 
 Steps:
 

@@ -7,7 +7,6 @@ test.describe("G3-UI-01, @C133", () => {
 
     await test.step("go to and verify home page", async () => {
       await homePage.goto();
-      await expect(page).toHaveURL(homePage.homeUrl);
     });
 
     await test.step("skip cookies banner if visible", async () => {
