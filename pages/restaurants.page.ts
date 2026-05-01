@@ -14,6 +14,16 @@ export class RestaurantsPage {
   public readonly specialsFilter: Locator;
   public readonly prevButton: Locator;
   public readonly nextButton: Locator;
+  public readonly cookiesButton: Locator;
+  public readonly restaurantNameHeading: Locator;
+  public readonly restaurantAddress: Locator;
+  public readonly menuTab: Locator;
+  public readonly reviewsTab: Locator;
+  public readonly hoursTab: Locator;
+  public readonly noReviewsYetText: Locator;
+  public readonly popularItemsHeading: Locator;
+  public readonly vegetableSamosaItem: Locator;
+  public readonly vegetableSamosaPrice: Locator;
 
   constructor(private page: Page) {
     this.matchingHeader = page.getByText("matching restaurants near you");
@@ -33,6 +43,27 @@ export class RestaurantsPage {
     this.specialsFilter = page.locator("#filters").getByText("Specials");
     this.prevButton = page.getByRole("button", { name: "Prev" });
     this.nextButton = page.getByRole("button", { name: "Next" });
+    this.cookiesButton = page.locator(".cipa-overlay");
+    this.restaurantNameHeading = page.getByRole("heading", {
+      name: "Amber Indian Cuisine",
+      exact: true,
+    });
+    this.restaurantAddress = page.getByText(
+      "6913 University Ave Middleton WI, 53562",
+      { exact: true },
+    );
+    this.menuTab = page.getByRole("radio", { name: "Menu" });
+    this.reviewsTab = page.getByRole("radio", { name: "Reviews" });
+    this.hoursTab = page.getByRole("radio", { name: "Hours" });
+    this.noReviewsYetText = page.getByText(/No reviews yet\.?/i);
+    this.popularItemsHeading = page.getByText("Popular Items", { exact: true });
+    this.vegetableSamosaItem = page
+      .locator("product")
+      .filter({ hasText: "1. Vegetable Samosa (2 Pieces)" })
+      .first();
+    this.vegetableSamosaPrice = this.vegetableSamosaItem
+      .locator(".food-price")
+      .first();
   }
 
   async verifyUrl() {
@@ -72,5 +103,53 @@ export class RestaurantsPage {
   async verifyPrevButton(){
     await expect(this.prevButton).toBeEnabled();
     await expect(this.prevButton).toBeVisible();
+  }
+
+  async gotoAmberIndianCuisine(url: string) {
+    await this.page.goto(url);
+    await expect(this.page).toHaveURL(url);
+  }
+
+  async skipCookiesBannerIfVisible() {
+    if (await this.cookiesButton.isVisible().catch(() => false)) {
+      await this.cookiesButton.click();
+    }
+  }
+
+  async verifyRestaurantDetailHeader() {
+    await expect(this.restaurantNameHeading).toBeVisible();
+    await expect(this.restaurantAddress).toBeVisible();
+  }
+
+  async verifyMenuReviewsAndHoursTabsVisible() {
+    await expect(this.menuTab).toBeVisible();
+    await expect(this.reviewsTab).toBeVisible();
+    await expect(this.hoursTab).toBeVisible();
+  }
+
+  async openReviewsTab() {
+    await this.reviewsTab.click();
+  }
+
+  async openHoursTab() {
+    await this.hoursTab.click();
+  }
+
+  async verifyReviewsContentOrNoReviewsYet() {
+    const ratingScore = this.page.locator('[class*="rating"]').first();
+    const reviewCard = this.page.locator('[class*="review"]').first();
+
+    if (await this.noReviewsYetText.isVisible().catch(() => false)) {
+      await expect(this.noReviewsYetText).toBeVisible();
+      return;
+    }
+
+    await expect(reviewCard.or(ratingScore)).toBeVisible();
+  }
+
+  async verifyPopularItemsAndVegetableSamosa() {
+    await expect(this.popularItemsHeading).toBeVisible();
+    await expect(this.vegetableSamosaItem).toBeVisible();
+    await expect(this.vegetableSamosaPrice).toBeVisible();
   }
 }
