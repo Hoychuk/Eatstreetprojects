@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '../../../pages/home.page';
 
-test.describe('EatStreet Homepage - Smoke', () => {
+test.describe('G1-UI-01 @C120 EatStreet Homepage - Smoke', () => {
 
   let homePage: HomePage;
 
