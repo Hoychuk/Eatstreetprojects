@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { HomePage } from "../../../pages/home.page";
+import { RestaurantsPage } from "../../../pages/restaurants.page";
 
 test.describe("G3-UI-01, @C133", () => {
   test("Verify Madison, WI restaurant search", async ({ page }) => {
@@ -19,18 +20,17 @@ test.describe("G3-UI-01, @C133", () => {
       await expect(page.getByText(/^Madison, WI,/).first()).toBeVisible();
       await homePage.getFedButton.click();
     });
+    const restaurantPage = new RestaurantsPage(page);
 
     await test.step("verify restaurant results", async () => {
-      await expect(page).toHaveURL(/espPageNumber=1$/);
-
+      await restaurantPage.verifyUrl();
       await expect(
         page.getByRole("heading", {
           name: "Madison Restaurants That Deliver & Takeout",
         }),
       ).toBeVisible();
-      await expect(
-        page.getByText(/\d+ matching restaurants near you/),
-      ).toBeVisible();
+      
+      await expect(restaurantPage.matchingHeader).toBeVisible();
     });
   });
 });
