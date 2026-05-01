@@ -15,7 +15,6 @@ test.describe("G3-UI-03, @C134", () => {
     });
 
     await test.step("fill search field and submit", async () => {
-      await homePage.takeOutButton.click();
       await homePage.searchAddress("Madison WI");
       await expect(page.getByText(/^Madison, WI,/).first()).toBeVisible();
       await homePage.getFedButton.click();

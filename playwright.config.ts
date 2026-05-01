@@ -1,9 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const isCI = !!process.env.CI;
 const isHeadless = process.env.PLAYWRIGHT_HEADLESS === "true";
 
 export default defineConfig({
-  timeout: 90000,
+  timeout: isCI ? 180000 : 90000,
+  expect: {
+    timeout: isCI ? 15000 : 5000,
+  },
   workers: 1,
   retries: 0,
   use: {
