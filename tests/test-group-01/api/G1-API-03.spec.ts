@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('EatStreet API - Anonymous User Validation', () => {
+test.describe('G1-API-03 @C124 EatStreet API - Anonymous User Validation', () => {
 
   test('GET /api/v2/user works for anonymous user', async ({ page }) => {
 
