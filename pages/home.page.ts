@@ -16,6 +16,7 @@ export class HomePage {
   public readonly footerGetTheAppSection: Locator;
   public readonly googlePlayBadgeLink: Locator;
   public readonly appStoreBadgeLink: Locator;
+  public readonly logo: Locator;
 
   constructor(private page: Page) {
     this.cookiesButton = page.locator(".cipa-overlay");
@@ -40,6 +41,7 @@ export class HomePage {
     });
     this.googlePlayBadgeLink = this.footer.locator("a.app-btn-android").first();
     this.appStoreBadgeLink = this.footer.locator("a.app-btn-iphone").first();
+    this.logo = page.getByRole('link', { name: /eatstreet logo/i });
   }
 
   async goto() {
@@ -121,5 +123,8 @@ export class HomePage {
       "href",
       /https:\/\/itunes\.apple\.com\/us\/app\/eatstreet-food-delivery-take-out-app\/id664697933\?mt=8/i,
     );
+  }
+  async verifyUrl() {
+    await expect(this.page).toHaveURL(this.homeUrl);
   }
 }
