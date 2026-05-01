@@ -1,6 +1,6 @@
 import { test, expect, request } from '@playwright/test';
 
-test.describe('EatStreet API - Order Session Info', () => {
+test.describe('G1-API-01 @C123 EatStreet API - Order Session Info', () => {
 
   const baseUrl = 'https://eatstreet.com';
 
