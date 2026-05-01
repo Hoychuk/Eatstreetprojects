@@ -8,6 +8,7 @@ export class HomePage {
   public readonly getFedButton: Locator;
   public readonly deliveryRadio: Locator;
   public readonly takeoutRadio: Locator;
+  public readonly suggesstionsBlock: Locator;
   public readonly footer: Locator;
   public readonly footerEatStreetSection: Locator;
   public readonly footerSupportSection: Locator;
@@ -23,6 +24,7 @@ export class HomePage {
     this.getFedButton = page.getByText("Get Fed");
     this.deliveryRadio = page.getByText("Delivery", { exact: true });
     this.takeoutRadio = page.getByText("Takeout", { exact: true });
+    this.suggesstionsBlock = page.locator("autocomplete ul");
     this.footer = page.locator("footer, .es-footer").first();
     this.footerEatStreetSection = this.footer.getByRole("heading", {
       name: "EatStreet",
@@ -62,8 +64,12 @@ export class HomePage {
   }
 
   async selectAddressSuggestion(suggestion: string): Promise<void> {
-    await this.page.getByText(suggestion).first().click();
+    await this.suggesstionsBlock.getByText(suggestion).first().click();
     return;
+  }
+
+  getFirstAddressSuggestion(suggestion: string): Locator {
+    return this.suggesstionsBlock.getByText(suggestion).first();
   }
 
   async submitSearch(): Promise<void> {
