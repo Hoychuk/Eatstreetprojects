@@ -10,6 +10,9 @@ export default defineConfig({
   },
   workers: 1,
   retries: 0,
+  reporter: isCI
+    ? [["github"], ["html", { open: "never" }]]
+    : [["list"], ["html", { open: "never" }]],
   use: {
     headless: isHeadless,
     screenshot: "only-on-failure",
