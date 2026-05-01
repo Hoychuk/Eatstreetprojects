@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('EatStreet - Header Navigation Validation (stable)', () => {
+test.describe('G1-UI-02 @C121 EatStreet - Header Navigation Validation (stable)', () => {
 
   test('Navigation elements are visible on homepage', async ({ page, context }) => {
 
