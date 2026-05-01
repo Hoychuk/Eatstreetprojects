@@ -71,6 +71,6 @@ export class RestaurantsPage {
 
   async verifyPrevButton(){
     await expect(this.prevButton).toBeEnabled();
-    await expect(this.nextButton).toBeVisible();
+    await expect(this.prevButton).toBeVisible();
   }
 }
