@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe(' G1-API-02 @C122 EatStreet API - Locale Alerts', () => {
+test.describe(' G1-API-02 @C125 EatStreet API - Locale Alerts', () => {
 
   const baseUrl = 'https://eatstreet.com';
 
