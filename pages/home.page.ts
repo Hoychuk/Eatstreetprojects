@@ -8,6 +8,13 @@ export class HomePage {
   public readonly getFedButton: Locator;
   public readonly deliveryRadio: Locator;
   public readonly takeoutRadio: Locator;
+  public readonly footer: Locator;
+  public readonly footerEatStreetSection: Locator;
+  public readonly footerSupportSection: Locator;
+  public readonly footerLegalSection: Locator;
+  public readonly footerGetTheAppSection: Locator;
+  public readonly googlePlayBadgeLink: Locator;
+  public readonly appStoreBadgeLink: Locator;
 
   constructor(private page: Page) {
     this.cookiesButton = page.locator(".cipa-overlay");
@@ -16,6 +23,21 @@ export class HomePage {
     this.getFedButton = page.getByText("Get Fed");
     this.deliveryRadio = page.getByText("Delivery", { exact: true });
     this.takeoutRadio = page.getByText("Takeout", { exact: true });
+    this.footer = page.locator("footer, .es-footer").first();
+    this.footerEatStreetSection = this.footer.getByRole("heading", {
+      name: "EatStreet",
+    });
+    this.footerSupportSection = this.footer.getByRole("heading", {
+      name: "Support",
+    });
+    this.footerLegalSection = this.footer.getByRole("heading", {
+      name: "Legal",
+    });
+    this.footerGetTheAppSection = this.footer.getByRole("heading", {
+      name: "Get the App",
+    });
+    this.googlePlayBadgeLink = this.footer.locator("a.app-btn-android").first();
+    this.appStoreBadgeLink = this.footer.locator("a.app-btn-iphone").first();
   }
 
   async goto() {
@@ -46,5 +68,52 @@ export class HomePage {
 
   async submitSearch(): Promise<void> {
     await this.getFedButton.click();
+  }
+
+  async searchAndSubmitFromAutocomplete(address: string): Promise<void> {
+    const madisonSuggestion = this.page.getByText(/Madison,\s*WI/i).first();
+    await this.addressField.click();
+    await this.addressField.fill("");
+    await this.addressField.type(address, { delay: 35 });
+    await expect(madisonSuggestion).toBeVisible({ timeout: 10000 });
+    await madisonSuggestion.click();
+    await this.submitSearch();
+  }
+
+  async verifyMadisonSearchAccepted(): Promise<void> {
+    await expect(this.page).toHaveURL(/madison/i);
+  }
+
+  async scrollToFooter(): Promise<void> {
+    await this.footer.scrollIntoViewIfNeeded();
+    await expect(this.footer).toBeVisible();
+  }
+
+  async verifyFooterSections(): Promise<void> {
+    await expect(this.footerEatStreetSection).toBeVisible();
+    await expect(this.footerSupportSection).toBeVisible();
+    await expect(this.footerLegalSection).toBeVisible();
+    await expect(this.footerGetTheAppSection).toBeVisible();
+  }
+
+  async scrollToGetTheApp(): Promise<void> {
+    await this.footerGetTheAppSection.scrollIntoViewIfNeeded();
+    await expect(this.footerGetTheAppSection).toBeVisible();
+  }
+
+  async verifyGooglePlayLink(): Promise<void> {
+    await expect(this.googlePlayBadgeLink).toBeVisible();
+    await expect(this.googlePlayBadgeLink).toHaveAttribute(
+      "href",
+      /https:\/\/play\.google\.com\/store\/apps\/details\?id=com\.eatstreet\.android(&hl=en)?/i,
+    );
+  }
+
+  async verifyAppStoreLink(): Promise<void> {
+    await expect(this.appStoreBadgeLink).toBeVisible();
+    await expect(this.appStoreBadgeLink).toHaveAttribute(
+      "href",
+      /https:\/\/itunes\.apple\.com\/us\/app\/eatstreet-food-delivery-take-out-app\/id664697933\?mt=8/i,
+    );
   }
 }
