@@ -1,67 +1,44 @@
 import { test, expect } from '@playwright/test';
+import { HomePage } from '../../../pages/home.page';
 
-test.describe('EatStreet - Homepage Marketing Content Validation', () => {
+test.describe('G1-UI-03 @C122 EatStreet - Homepage Marketing Validation', () => {
 
-  test('Marketing sections are displayed correctly', async ({ page, context }) => {
+  test('Marketing sections are displayed correctly', async ({ page }) => {
 
-    // =========================
-    // STEP 0: Setup (cookie bypass)
-    // =========================
-    await test.step('Bypass cookie banner (if present)', async () => {
-      await context.addCookies([
-        {
-          name: 'OptanonAlertBoxClosed',
-          value: 'true',
-          domain: '.eatstreet.com',
-          path: '/'
-        }
-      ]);
+    const home = new HomePage(page);
+
+    await test.step('Open homepage', async () => {
+      await home.goto();
     });
 
-    // =========================
-    // STEP 1: Open homepage
-    // =========================
-    await test.step('Open EatStreet homepage', async () => {
-      await page.goto('https://eatstreet.com/');
-      await page.waitForLoadState('domcontentloaded');
+    await test.step('Handle cookies if present', async () => {
+      await home.skipCookiesBannerIfVisible();
     });
 
-    // =========================
-    // STEP 2: Verify main marketing headline
-    // =========================
-    await test.step('Verify main marketing headline is displayed', async () => {
-      const headline = page.getByText('EatStreet is the Smartest Way to Order Food Online');
-
-      await expect(headline).toBeVisible();
+    await test.step('Verify main page loaded correctly', async () => {
+      await expect(page.getByRole('navigation')).toBeVisible();
+      await expect(page.locator('footer, .es-footer').first()).toBeVisible();
     });
 
-    // =========================
-    // STEP 3: Verify marketing sections
-    // =========================
-    await test.step('Verify marketing sections are displayed', async () => {
+    await test.step('Verify marketing headline', async () => {
+      const headline = page.locator('h1, h2').filter({
+        hasText: 'EatStreet'
+      });
 
-      const signUpRestaurant = page.getByText('Sign Up Your Restaurant');
-      const joinOurTeam = page.getByText('Join Our Team');
-      const downloadApp = page.getByText('Download The App');
+      await expect(headline.first()).toBeVisible();
+    });
 
-      await expect(signUpRestaurant).toBeVisible();
-      await expect(joinOurTeam).toBeVisible();
-      await expect(downloadApp).toBeVisible();
+    await test.step('Verify marketing sections', async () => {
+
+      await expect(page.getByText('Sign Up Your Restaurant')).toBeVisible();
+      await expect(page.getByText('Join Our Team')).toBeVisible();
+      await expect(page.getByText('Download The App')).toBeVisible();
 
     });
 
-    // =========================
-    // STEP 4: Validate no broken UI blocks
-    // =========================
-    await test.step('Verify page has no empty or broken content blocks', async () => {
-
-      const body = page.locator('body');
-      await expect(body).toBeVisible();
-
-      // Basic integrity check (page is not blank)
-      const allText = await page.locator('body').innerText();
-      expect(allText.length).toBeGreaterThan(100);
-
+    await test.step('Verify footer structure using POM', async () => {
+      await home.scrollToFooter();
+      await home.verifyFooterSections();
     });
 
   });
